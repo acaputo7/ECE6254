@@ -58,15 +58,15 @@ X_test_scaled = scaler.transform(X_test)
 
 #6c) LASSO
 
-
-for alpha in range(1,10):
-
-    X_trainCV, X_testCV, y_trainCV, y_testCV = train_test_split(X_train_scaled, y_train, test_size=10, random_state=42)
-    reg = linear_model.Lasso(alpha=alpha)
-    reg.fit(X_trainCV, y_trainCV)
-    y_pred = reg.predict(X_testCV)
-
-    MSE_lasso_train = (1/len(X_testCV))*np.linalg.norm(y_testCV-y_pred)**2
-    print('for alpha of ' + str(alpha) + ' \nMSE = ' + str(MSE_lasso_train))
-
-
+reg2 = linear_model.LassoCV(cv=10, random_state=0).fit(X_train_scaled, y_train)
+y_pred = reg2.predict(X_test_scaled)
+MSE_lasso_train2 = (1/len(X_test_scaled))*np.linalg.norm(y_test-y_pred)**2
+print('for alpha of ' + str(reg2.get_params()) + ' \nMSE = ' + str(MSE_lasso_train2))
+print(reg2.coef_)
+alpha = 0.0088
+reg = linear_model.Lasso(alpha=alpha)
+reg.fit(X_train_scaled, y_train)
+y_pred = reg.predict(X_test_scaled)
+MSE_lasso_train = (1 / len(X_test_scaled)) * np.linalg.norm(y_test - y_pred) ** 2
+print('for alpha of ' + str(alpha) + ' \nMSE = ' + str(MSE_lasso_train))
+print(reg.coef_)
