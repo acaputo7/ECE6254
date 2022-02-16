@@ -24,8 +24,9 @@ def neg_log_like(theta, x, y):
 #######################################################
 #######################################################
 def log_grad(theta, x, y):
-    #YOUR IMPLEMENTATION HERE
-    return None #RETURN: 1 value: gradient
+    for i in range(len(x)):
+        grad = grad + x[i,:]*(y[i]-logistic_func(theta=theta.T,x=x[i,:]))
+    return grad #RETURN: 1 value: gradient
 
 
 # implementation of gradient descent for logistic regression
@@ -41,6 +42,18 @@ def log_grad(theta, x, y):
 #######################################################
 def grad_desc(theta, x, y, alpha, tol, maxiter):
     #YOUR IMPLEMENTATION HERE
+    k = 1
+    while k <= range(maxiter):
+        thetaK = theta + alpha*log_grad(theta,x,y)
+
+        cost_diff = np.abs(prev_cost - cost)
+        theta = theta_new
+        prev_cost = cost
+        if cost_diff <= tol:
+            break;
+
+
+
     return None, None #RETURN: 2 values: estimated theta, cost at each iteration as np.array
 
 
@@ -65,7 +78,7 @@ def log_hess(theta, x):
 #######################################################
 #######################################################
 def newton(theta, x, y, tol=1e-12, maxiter=100):
-    #YOUR IMPLEMENTATION HERE
+
     return None, None #RETURN: 2 values: estimated theta, cost at each iteration as np.array
 
 # function to compute output of LR classifier (unused)
