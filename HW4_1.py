@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from sklearn import datasets
 from math import exp
 
+
 # the logistic function
 def logistic_func(theta, x):
     t = x.dot(theta)
@@ -24,8 +25,10 @@ def neg_log_like(theta, x, y):
 #######################################################
 #######################################################
 def log_grad(theta, x, y):
+    grad = np.zeros(shape[1]+1)
     for i in range(len(x)):
-        grad = grad + x[i,:]*(y[i]-logistic_func(theta=theta.T,x=x[i,:]))
+        grad_i = x[i] * (y[i]-logistic_func(theta=theta.T, x=x[i]))
+        grad = grad + grad_i
     return grad #RETURN: 1 value: gradient
 
 
@@ -41,20 +44,28 @@ def log_grad(theta, x, y):
 #######################################################
 #######################################################
 def grad_desc(theta, x, y, alpha, tol, maxiter):
-    #YOUR IMPLEMENTATION HERE
     k = 1
-    while k <= range(maxiter):
+    cost = []
+    cost_k_1 = 10000
+    while k <= maxiter:
+
+        #change theta for this iteration k by alpha*gradient
         thetaK = theta + alpha*log_grad(theta,x,y)
 
-        cost_diff = np.abs(prev_cost - cost)
-        theta = theta_new
-        prev_cost = cost
-        if cost_diff <= tol:
+        #calculate cost given by change in neg_log_likelihood
+        cost.append(neg_log_like(theta,x,y))
+        dcost = np.abs(cost[k-1] - cost_k_1)
+
+        #figure out if near min has been found
+        if dcost <= tol:
             break;
 
+        #Update theta, last cost and iteration
+        cost_k_1 = cost[k-1]
+        theta = thetaK
+        k = k + 1
 
-
-    return None, None #RETURN: 2 values: estimated theta, cost at each iteration as np.array
+    return theta, cost #RETURN: 2 values: estimated theta, cost at each iteration as np.array
 
 
 # function to compute the Hessian of the negative log-likelihood
@@ -63,9 +74,13 @@ def grad_desc(theta, x, y, alpha, tol, maxiter):
 ##              TODO: PART (E)                       ##
 #######################################################
 #######################################################
+
 def log_hess(theta, x):
-    #YOUR IMPLEMENTATION HERE
-    return None #RETURN: 1 value: Hessian
+    Hessian = np.empty(np.matmul(x.T, x).shape)
+    for i in range(len(x)):
+        Hessian_i = -1*np.matmul(x[i].T, x[i]) * logistic_func(theta.T, x[i]) * (1 - logistic_func(theta.T, x[i]))
+        Hessian = Hessian + Hessian_i
+    return Hessian #RETURN: 1 value: Hessian
 
 # implementation of Newton's method for logistic regression
 # INPUTS:
@@ -77,9 +92,27 @@ def log_hess(theta, x):
 ##              TODO: PART (E)                       ##
 #######################################################
 #######################################################
-def newton(theta, x, y, tol=1e-12, maxiter=100):
+def newton(theta, x, y, tol, maxiter):
+    k = 1
+    cost = []
+    cost_k_1 = 10000
+    while k <= maxiter:
+        thetaK = theta + np.matmul(np.linalg.inv(log_hess(theta, x)), log_grad(theta, x, y))
 
-    return None, None #RETURN: 2 values: estimated theta, cost at each iteration as np.array
+        #calculate cost given by change in neg_log_likelihood
+        cost.append(neg_log_like(theta,x,y))
+        dcost = np.abs(cost[k-1] - cost_k_1)
+
+        #figure out if near min has been found
+        if dcost <= tol:
+            break;
+
+        #Update theta, last cost and iteration
+        cost_k_1 = cost[k-1]
+        theta = thetaK
+        k = k + 1
+
+    return theta, cost #RETURN: 2 values: estimated theta, cost at each iteration as np.array
 
 # function to compute output of LR classifier (unused)
 def lr_predict(theta,x):
@@ -105,9 +138,9 @@ xtilde[:,1:] = x
 theta_gd, theta_newton = np.zeros(shape[1]+1), np.zeros(shape[1]+1)
 
 # Run gradient descent
-alpha = 1e-5
+alpha = 3e-5
 maxiter = 10000
-tol = 1e-3
+tol = 1e-4
 
 import time
 start = time.time()
@@ -118,17 +151,18 @@ print('Final value of negative log-likelihood for GD: ' + str(cost_gd[-1]))
 print('Number of iterations for GD: ' + str(len(cost_gd)-1))
 
 #UNCOMMENT TO RUN NEWTON
-#start = time.time()
-#theta_newton, cost_newton = newton(theta_newton, xtilde, y, tol=tol, maxiter=maxiter)
-#end = time.time()
-#print('Running time of Newton: ' + str(end-start))
-#print('Final value of negative log-likelihood of Newton: ' + str(cost_newton[-1]))
-#print('Number of iterations for Newton: ' + str(len(cost_newton)-1))
+start = time.time()
+theta_newton, cost_newton = newton(theta_newton, xtilde, y, tol=5e-4, maxiter=100)
+end = time.time()
+print('Running time of Newton: ' + str(end-start))
+print('Final value of negative log-likelihood of Newton: ' + str(cost_newton[-1]))
+print('Number of iterations for Newton: ' + str(len(cost_newton)-1))
 
 
 plt.plot(np.arange(len(cost_gd)), cost_gd)
-#plt.plot(np.arange(len(cost_newton)), cost_newton)
+plt.plot(np.arange(len(cost_newton)), cost_newton)
 plt.xlabel("Number of iterations")
 plt.ylabel("Cost")
 plt.title("Logistic regression cost vs. iterations")
+plt.legend(["Logistic Regression", "Newton's Method"])
 plt.show()
