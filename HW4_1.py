@@ -19,11 +19,7 @@ def neg_log_like(theta, x, y):
     return -sum(np.log(g[y>0.5])) - sum(np.log(1-g[y<0.5]))
 
 # function to compute the gradient of the negative log-likelihood
-#######################################################
-#######################################################
-##              TODO: PART (C)                       ##
-#######################################################
-#######################################################
+
 def log_grad(theta, x, y):
     grad = np.zeros(shape[1]+1)
     for i in range(len(x)):
@@ -38,11 +34,7 @@ def log_grad(theta, x, y):
 #   tol: tolerance for GD. If |cost_k - cost_{k-1}| <= tol, STOP.
 #           cost_k is the negative log-likelihood with the estimate for \theta at iter k
 #   maxiter: maximum number of iterations.
-#######################################################
-#######################################################
-##              TODO: PART (C)                       ##
-#######################################################
-#######################################################
+
 def grad_desc(theta, x, y, alpha, tol, maxiter):
     k = 1
     cost = []
@@ -69,11 +61,6 @@ def grad_desc(theta, x, y, alpha, tol, maxiter):
 
 
 # function to compute the Hessian of the negative log-likelihood
-#######################################################
-#######################################################
-##              TODO: PART (E)                       ##
-#######################################################
-#######################################################
 
 def log_hess(theta, x):
     Hessian = np.empty(np.matmul(x.T, x).shape)
@@ -87,11 +74,7 @@ def log_hess(theta, x):
 #   tol: tolerance for GD. If |cost_k - cost_{k-1}| <= tol, STOP.
 #           cost_k is the negative log-likelihood with the estimate for \theta at iter k
 #   maxiter: maximum number of iterations.
-#######################################################
-#######################################################
-##              TODO: PART (E)                       ##
-#######################################################
-#######################################################
+
 def newton(theta, x, y, tol, maxiter):
     k = 1
     cost = []
@@ -163,6 +146,6 @@ plt.plot(np.arange(len(cost_gd)), cost_gd)
 plt.plot(np.arange(len(cost_newton)), cost_newton)
 plt.xlabel("Number of iterations")
 plt.ylabel("Cost")
-plt.title("Logistic regression cost vs. iterations")
+plt.title("Cost vs. iterations")
 plt.legend(["Logistic Regression", "Newton's Method"])
 plt.show()
