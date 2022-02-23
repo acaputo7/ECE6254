@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from sklearn import datasets
 from math import exp
 import time
+import numpy.linalg as LA
 
 # the logistic function
 def logistic_func(theta, x):
@@ -35,8 +36,26 @@ def log_grad(theta, x, y):
 #######################################################
 #######################################################
 def stoc_grad_desc(theta, x, y, alpha, blocksize, tol, maxiter):
-    #YOUR IMPLEMENTATION HERE
-    return None, None #RETURN: 2 values: estimated theta, cost at each iteration as np.array
+    k = 1
+    cost = []
+    while k <= maxiter:
+        rand = np.random.randint(0, x.shape[0]-blocksize, blocksize)
+        #change theta for this iteration k by alpha*gradient
+        thetaK = theta + alpha*log_grad(theta, x[rand], y[rand])
+
+        #calculate cost given by change in neg_log_likelihood
+        cost.append(neg_log_like(theta, x[rand], y[rand]))
+        dtheta = LA.norm((thetaK - theta))
+
+        #figure out if near min has been found
+        if k > 1 and dtheta <= tol:
+            break
+
+        #Update theta and iteration
+        theta = thetaK
+        k = k + 1
+
+    return theta, cost #RETURN: 2 values: estimated theta, cost at each iteration as np.array
 
 # function to compute output of LR classifier (unused)
 def lr_predict(theta,x):
