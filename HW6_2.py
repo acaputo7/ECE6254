@@ -99,7 +99,7 @@ y_test =np.concatenate((y_4test,y_9test),axis=0)
 ##              TODO: PART B                         ##
 #######################################################
 #######################################################
-Cvec = np.logspace(-4,-1,4) #Choose values of C to sweep.
+Cvec = np.logspace(-4,4,9) #Choose values of C to sweep.
 
 for deg in [1,2]:
     print("Training SVM with polynomial kernel, deg = " + str(deg))
@@ -116,12 +116,12 @@ for deg in [1,2]:
         clf.fit(X_val,y_val)
 
         #You should compute the probability of error on all 3 sets and store them appropriately.
-        Pe_train = 1 - clf.score(X_train,y_train)
-        Pe_val = 1 - clf.score(X_val,y_val)
-        Pe_test = 1 - clf.score(X_test,y_test)
+        Pe_train.append(1 - clf.score(X_train,y_train))
+        Pe_val.append(1 - clf.score(X_val,y_val))
+        Pe_test.append(1 - clf.score(X_test,y_test))
 
         #You should also track the number of support vectors.
-        numSvs = clf.support_vectors_
+        numSvs.append(len(clf.support_vectors_))
     #Based on the validation set, set the value for C
     Cval_opt = Cvec[np.argmin(Pe_val)]
     print('Optimal value of C based on validation set: ' + str(Cval_opt))
@@ -150,14 +150,21 @@ Pe_val = []     #Probability of error for validation set
 Pe_test = []    #Probability of error for testing set
 numSvs = []     #Number of support vectors
 
-#Gammavec = ??? #Choose values of gamma to sweep.
+Gammavec = np.logspace(-9,-3,7) #Choose values of gamma to sweep.
 
 for Gammaval in Gammavec:
     print('Testing Gammaval = ' + str(Gammaval))
     #Train SVM w/ rbf kernel using C = 10 and Gammaval
     #You should compute the probability of error on all 3 sets and store them appropriately.
     #You should also track the number of support vectors.
+    clf = svm.SVC(C=10, kernel='rbf',gamma=Gammaval)
+    clf.fit(X_val,y_val)
 
+
+    Pe_train.append(1 - clf.score(X_train,y_train))
+    Pe_val.append(1 - clf.score(X_val,y_val))
+    Pe_test.append(1 - clf.score(X_test,y_test))
+    numSvs.append(len(clf.support_vectors_))
 Gammaval_opt = Gammavec[np.argmin(Pe_val)]
 print('Optimal value of Gamma based on validation set: ' + str(Gammaval_opt))
 print('Train error: ' + str(Pe_train[np.argmin(Pe_val)]))
@@ -168,4 +175,5 @@ print('Pe_test: ', Pe_test)
 print('Pe_val: ', Pe_val)
 print('numSvs: ', numSvs)
 
-display_SVs('rbf', 10, gamma=Gammaval_opt)
+display_SVs('rbf', 10, gamma_opt=Gammaval_opt)
+
