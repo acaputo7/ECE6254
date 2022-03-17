@@ -59,7 +59,7 @@ y = mnist.target.astype(int)   #default return type is a np.array of str
 
 #View the jth image
 '''
-j = 1
+j = 500
 plt.title('The jth image is a {label}'.format(label=int(y[j])))
 plt.imshow(X[j].reshape((28,28)), cmap='gray')
 plt.show()
@@ -68,12 +68,19 @@ plt.show()
 X4 = X[y==4,:]
 X9 = X[y==9,:]
 
+y_4 = 4*np.ones(len(X4))
+y_9 = 9*np.ones(len(X9))
+X_49 = [X4 , X9]
+y_49 = [y_4 , y_9]
 #######################################################
 #######################################################
 ##              TODO: PART A                         ##
 #######################################################
 #######################################################
 
+X_train, X_test, y_train, y_test = train_test_split(X_49, y_49, train_size=4000, random_state=1)
+
+X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=2000, random_state=1)
 
 
 
@@ -84,7 +91,7 @@ X9 = X[y==9,:]
 ##              TODO: PART B                         ##
 #######################################################
 #######################################################
-Cvec = ??? #Choose values of C to sweep.
+Cvec = np.logspace(-4,-1,10) #Choose values of C to sweep.
 
 for deg in [1,2]:
     print("Training SVM with polynomial kernel, deg = " + str(deg))
@@ -96,9 +103,17 @@ for deg in [1,2]:
     for Cval in Cvec:
         print('Testing Cval = ' + str(Cval))
         #Train SVM w/ polynomial kernel using Cval and deg
-        #You should compute the probability of error on all 3 sets and store them appropriately.
-        #You should also track the number of support vectors.
 
+        clf = svm.SVC(C=Cval, kernel='poly', degree=deg)
+        clf.fit(X_val,y_val)
+
+        #You should compute the probability of error on all 3 sets and store them appropriately.
+        Pe_train = 1 - clf.score(X_train,y_train)
+        Pe_val = 1 - clf.score(X_val,y_val)
+        Pe_test = 1 - clf.score(X_test,y_test)
+
+        #You should also track the number of support vectors.
+        numSvs = clf.support_vectors_
     #Based on the validation set, set the value for C
     Cval_opt = Cvec[np.argmin(Pe_val)]
     print('Optimal value of C based on validation set: ' + str(Cval_opt))
@@ -127,7 +142,7 @@ Pe_val = []     #Probability of error for validation set
 Pe_test = []    #Probability of error for testing set
 numSvs = []     #Number of support vectors
 
-Gammavec = ??? #Choose values of gamma to sweep.
+#Gammavec = ??? #Choose values of gamma to sweep.
 
 for Gammaval in Gammavec:
     print('Testing Gammaval = ' + str(Gammaval))
