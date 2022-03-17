@@ -68,22 +68,30 @@ plt.show()
 X4 = X[y==4,:]
 X9 = X[y==9,:]
 
-y_4 = 4*np.ones(len(X4))
-y_9 = 9*np.ones(len(X9))
-X_49 = [X4 , X9]
-y_49 = [y_4 , y_9]
+
 #######################################################
 #######################################################
 ##              TODO: PART A                         ##
 #######################################################
 #######################################################
+y_4 = 4*np.ones(len(X4))
+y_9 = 9*np.ones(len(X9))
 
-X_train, X_test, y_train, y_test = train_test_split(X_49, y_49, train_size=4000, random_state=1)
+#Do what a stratified split does, but manually keeping equal parts of both classes in each set
+X_train, X_4test, y_train, y_4test = train_test_split(X4, y_4, train_size=4000, random_state=1)
+X_4train, X_4val, y_4train, y_4val = train_test_split(X_train, y_train, test_size=2000, random_state=1)
 
-X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=2000, random_state=1)
+X_train, X_9test, y_train, y_9test = train_test_split(X9, y_9, train_size=4000, random_state=1)
+X_9train, X_9val, y_9train, y_9val = train_test_split(X_train, y_train, test_size=2000, random_state=1)
+
+X_train = np.concatenate((X_4train,X_9train),axis=0)
+X_val = np.concatenate((X_4val,X_9val),axis=0)
+X_test =np.concatenate((X_4test,X_9test),axis=0)
 
 
-
+y_train = np.concatenate((y_4train,y_9train),axis=0)
+y_val = np.concatenate((y_4val,y_9val),axis=0)
+y_test =np.concatenate((y_4test,y_9test),axis=0)
 #Create training/validation/testing sets
 
 #######################################################
@@ -91,7 +99,7 @@ X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=20
 ##              TODO: PART B                         ##
 #######################################################
 #######################################################
-Cvec = np.logspace(-4,-1,10) #Choose values of C to sweep.
+Cvec = np.logspace(-4,-1,4) #Choose values of C to sweep.
 
 for deg in [1,2]:
     print("Training SVM with polynomial kernel, deg = " + str(deg))
