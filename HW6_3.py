@@ -53,14 +53,8 @@ plt.show()
 
 
 #3b
-
-
 e = 0.1
 g = 10
-
-
-
-
 Cvec = np.logspace(0,3,100)
 Cmae = np.ones(len(Cvec))
 for i in range(len(Cvec)) :
@@ -72,7 +66,6 @@ for i in range(len(Cvec)) :
     Cmae[i] = mean_absolute_error(ytest,ypred)
     # print('For Cval = ' + str(Cvec[i]) + ' MAE = ' + str(mae))
 Copt = Cvec[np.argmin(Cmae)]
-
 print('The optimal C = ' + str(Copt) + ' with MAE = ' + str(np.min(Cmae)))
 
 evec = np.logspace(-2,3,100)
@@ -86,9 +79,7 @@ for i in range(len(evec)) :
     emae[i] = mean_absolute_error(ytest,ypred)
     # print('For eval = ' + str(evec[i]) + ' MAE = ' + str(mae))
 eopt = evec[np.argmin(emae)]
-
 print('The optimal e = ' + str(eopt) + ' with MAE = ' + str(np.min(emae)))
-
 
 gvec = np.logspace(-2,3,100)
 gmae = np.ones(len(gvec))
@@ -101,7 +92,6 @@ for i in range(len(gvec)) :
     gmae[i] = mean_absolute_error(ytest,ypred)
     # print('For gval = ' + str(gvec[i]) + ' MAE = ' + str(mae))
 gopt = gvec[np.argmin(gmae)]
-
 print('The optimal g = ' + str(gopt) + ' with MAE = ' + str(np.min(gmae)))
 
 
