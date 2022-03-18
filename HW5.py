@@ -39,12 +39,12 @@ def stoc_grad_desc(theta, x, y, alpha, blocksize, tol, maxiter):
     k = 1
     cost = []
     while k <= maxiter:
-        rand = np.random.randint(0, x.shape[0]-blocksize, blocksize)
+        rand = np.random.randint(0, x.shape[0], blocksize)
         #change theta for this iteration k by alpha*gradient
-        thetaK = theta + alpha*log_grad(theta, x[rand], y[rand])
+        thetaK = theta - alpha*log_grad(theta, x[rand], y[rand])
 
         #calculate cost given by change in neg_log_likelihood
-        cost.append(neg_log_like(theta, x[rand], y[rand]))
+        cost.append(neg_log_like(theta, x, y))
         dtheta = LA.norm((thetaK - theta))
 
         #figure out if near min has been found

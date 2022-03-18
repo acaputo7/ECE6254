@@ -1,6 +1,6 @@
 from sklearn.datasets import fetch_openml
-from sklearn.model_selection import train_test_split
-from sklearn import svm
+from sklearn.metrics import mean_absolute_error
+from sklearn.svm import SVR
 import numpy as np
 import matplotlib.pyplot as plt
 import numpy.linalg as LA
@@ -49,4 +49,69 @@ plt.plot(Xtest, ytest, label='Test')
 plt.scatter(Xtest, ypred, label='KRR')
 plt.legend()
 
+plt.show()
+
+
+#3b
+
+
+e = 0.1
+g = 10
+
+
+
+
+Cvec = np.logspace(0,3,100)
+Cmae = np.ones(len(Cvec))
+for i in range(len(Cvec)) :
+    reg = SVR(C=Cvec[i], epsilon=e, kernel='rbf', gamma=g)
+    reg.fit(Xtrain.reshape(-1,1), ytrain)
+    ypred = reg.predict(Xtest.reshape(-1,1))
+    mae = mean_absolute_error(ytest,ypred)
+
+    Cmae[i] = mean_absolute_error(ytest,ypred)
+    # print('For Cval = ' + str(Cvec[i]) + ' MAE = ' + str(mae))
+Copt = Cvec[np.argmin(Cmae)]
+
+print('The optimal C = ' + str(Copt) + ' with MAE = ' + str(np.min(Cmae)))
+
+evec = np.logspace(-2,3,100)
+emae = np.ones(len(evec))
+for i in range(len(evec)) :
+    reg = SVR(C=Copt, epsilon=evec[i], kernel='rbf', gamma=g)
+    reg.fit(Xtrain.reshape(-1,1), ytrain)
+    ypred = reg.predict(Xtest.reshape(-1,1))
+    mae = mean_absolute_error(ytest,ypred)
+
+    emae[i] = mean_absolute_error(ytest,ypred)
+    # print('For eval = ' + str(evec[i]) + ' MAE = ' + str(mae))
+eopt = evec[np.argmin(emae)]
+
+print('The optimal e = ' + str(eopt) + ' with MAE = ' + str(np.min(emae)))
+
+
+gvec = np.logspace(-2,3,100)
+gmae = np.ones(len(gvec))
+for i in range(len(gvec)) :
+    reg = SVR(C=Copt, epsilon=eopt, kernel='rbf', gamma=gvec[i])
+    reg.fit(Xtrain.reshape(-1,1), ytrain)
+    ypred = reg.predict(Xtest.reshape(-1,1))
+    mae = mean_absolute_error(ytest,ypred)
+
+    gmae[i] = mean_absolute_error(ytest,ypred)
+    # print('For gval = ' + str(gvec[i]) + ' MAE = ' + str(mae))
+gopt = gvec[np.argmin(gmae)]
+
+print('The optimal g = ' + str(gopt) + ' with MAE = ' + str(np.min(gmae)))
+
+
+reg = SVR(C=Copt, epsilon=eopt, kernel='rbf', gamma=gopt)
+reg.fit(Xtrain.reshape(-1,1), ytrain)
+ypred = reg.predict(Xtest.reshape(-1,1))
+
+plt.figure(2)
+plt.scatter(Xtrain, ytrain, label='Train')
+plt.plot(Xtest, ytest, label='Test')
+plt.scatter(Xtest, ypred, label='SVR with RBF')
+plt.legend()
 plt.show()
