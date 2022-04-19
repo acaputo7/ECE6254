@@ -32,7 +32,22 @@ np.random.seed(2022)
 digits = load_digits(n_class=7)
 X, y = digits.data, digits.target
 n_samples, n_features = X.shape
+n_neighbors = 30
+embeddings = {
+    "PCA embedding": decomposition.PCA
+    "MDS embedding": manifold.MDS(n_components=2, n_init=1, max_iter=120, n_jobs=2
+    ),
 
+    "LLE embedding": manifold.LocallyLinearEmbedding(
+        n_neighbors=n_neighbors, n_components=2, method="standard"
+    ),
+    "Isomap embedding": manifold.Isomap(n_neighbors=n_neighbors, n_components=2
+    ),
+
+
+
+
+}
 ## PCA
 
 
