@@ -1,7 +1,7 @@
 from sklearn.datasets import load_digits
 from sklearn.neural_network import MLPClassifier, MLPRegressor
 from sklearn.model_selection import train_test_split
-
+from sklearn.metrics import mean_squared_error
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -37,10 +37,19 @@ xtest = np.linspace(0,1,1001)
 ytest = np.sin(9*xtest) + xtest
 
 # Fit MLPRegressor to training data.
-reg = MLPRegressor(activation='relu', max_iter=1000, hidden_layer_sizes=50)
-reg.fit(xtrain.reshape(-1,1),ytrain)
+reg = MLPRegressor(activation='relu', max_iter=1000, hidden_layer_sizes=100)
+reg.fit(xtrain.reshape(-1,1), ytrain)
+print(reg.n_layers_)
 
 # Use the trained MLPRegressor to predict regression outputs
 ypred = reg.predict(xtest.reshape(-1,1))
-
+print(reg.get_params())
 # Compute mean squared error on test set, plot network output.
+MSE = mean_squared_error(y_true=ytest,y_pred=ypred)
+print('The MSE is: ' + str('{:.4f}'.format(MSE)))
+
+
+plt.figure(1)
+plt.plot(xtest, ytest)
+plt.plot(xtest, ypred)
+plt.show()
