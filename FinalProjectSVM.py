@@ -4,7 +4,7 @@ import seaborn as sns
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import cross_val_score, RepeatedStratifiedKFold
-from sklearn.metrics import classification_report,accuracy_score
+from sklearn.metrics import classification_report, accuracy_score, ConfusionMatrixDisplay, confusion_matrix, RocCurveDisplay, roc_curve
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 import plotly.express as px
@@ -32,6 +32,7 @@ categorical = DATA.select_dtypes('object').columns
 #
 # #plot distribution of numerical variables with presence of heard disease
 #
+# plt.rcParams.update({'font.size':14})
 # sns.pairplot(DATA, hue="HeartDisease", corner=True)
 # # plt.savefig('pairplot.png')
 
@@ -86,31 +87,39 @@ y = DATA_s['HeartDisease']
 
 #normalize data & split
 scaler = StandardScaler()
-X_train, X_test, y_train,  y_test = train_test_split(X, y, test_size=0.4, stratify=y, random_state=25)
+X_train, X_test, y_train,  y_test = train_test_split(X, y, test_size=0.15, stratify=y, random_state=25)
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
 
-#train SVC with no kernelization [gamma='scale' (default) is passed then it uses 1 / (n_features * X.var()) as value of gamma]
+#train SVC  [gamma='scale' (default) is passed then it uses 1 / (n_features * X.var()) as value of gamma]
 svm=SVC(kernel='rbf', class_weight='balanced')
-svm.fit(X_train,y_train)
-
+clf = svm.fit(X_train, y_train)
+print(svm.get_params())
 def evaluate_model(model, X, y):
     cv = RepeatedStratifiedKFold(n_splits=5, n_repeats=5)
-    scores = cross_val_score(model, X, y, scoring='accuracy', cv=cv, n_jobs=-1, error_score='raise')
+    scores = cross_val_score(model, scaler.fit_transform(X), y, scoring='accuracy', cv=cv, n_jobs=-1, error_score='raise')
     return np.mean(scores)
 
 
 #predict
 y_pred = svm.predict(X_test)
 
+#confusion matrix
 
+# disp = ConfusionMatrixDisplay(confusion_matrix(y_true=y_test,y_pred=y_pred))
+# disp.plot()
+# plt.savefig('Confusionmatrix.png')
 
+#plot ROC curve
+# disp = RocCurveDisplay.from_estimator(clf, X_test, y_test)
+# disp.plot()
+# plt.savefig('ROC_CurveSVM.png')
 #evaluate accuracy
 score = []
 cv_scores = []
 score.append(accuracy_score(y_pred=y_pred, y_true=y_test))
 cv_scores.append(evaluate_model(svm, X, y))
 print(classification_report(y_pred=y_pred, y_true=y_test))
-print(cv_scores)
-print(score)
+print('Cross validation mean score: ' + str(cv_scores))
+print('Accuracy score: ' + str(score))
