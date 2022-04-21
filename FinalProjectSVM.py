@@ -1,23 +1,92 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import cross_val_score, RepeatedStratifiedKFold
 from sklearn.metrics import classification_report,accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
+import plotly.express as px
+
+
+
 
 #import dataset
-ds = pd.read_csv('C:/Users/acaputo7/PycharmProjects/ECE6254/heart.csv')
+DATA = pd.read_csv('C:/Users/acaputo7/PycharmProjects/ECE6254/heart.csv')
+
+#split categorical features and numerical features
+numerical = DATA.drop(['HeartDisease'], axis=1).select_dtypes('number').columns
+
+categorical = DATA.select_dtypes('object').columns
+
+# print(f'Numerical Columns:  {DATA[numerical].columns}')
+# print('\n')
+# print(f'Categorical Columns: {DATA[categorical].columns}')
+
+# #plot Pearson heatmap
+# plt.figure(1, figsize=(12, 8))
+# sns.heatmap(DATA.corr(), annot=True)
+# plt.xticks(rotation=45)
+# # plt.savefig('correlation.png')
+#
+# #plot distribution of numerical variables with presence of heard disease
+#
+# sns.pairplot(DATA, hue="HeartDisease", corner=True)
+# # plt.savefig('pairplot.png')
+
+#plot distributions of categorical variables
+#
+# fig5 = px.histogram(DATA,
+#                  x="Sex",
+#                  color="HeartDisease",
+#                  hover_data=DATA.columns,
+#                 )
+# fig5.show()
+#
+# fig1 = px.histogram(DATA,
+#                  x="ChestPainType",
+#                  color="HeartDisease",
+#                  hover_data=DATA.columns,
+#                 )
+# fig1.show()
+#
+# fig2 = px.histogram(DATA,
+#                  x="RestingECG",
+#                  color="HeartDisease",
+#                  hover_data=DATA.columns,
+#                 )
+# fig2.show()
+#
+# fig3 = px.histogram(DATA,
+#                  x="ExerciseAngina",
+#                  color="HeartDisease",
+#                  hover_data=DATA.columns,
+#                 )
+# fig3.show()
+#
+# fig4 = px.histogram(DATA,
+#                  x="ST_Slope",
+#                  color="HeartDisease",
+#                  hover_data=DATA.columns,
+#                 )
+# fig4.show()
+
+
+
+
+
+
 
 #format dataset for model by splitting class from feature list
-ds_s=pd.get_dummies(ds)
-X=ds_s.drop(['HeartDisease'],axis=1)
-y=ds_s['HeartDisease']
+DATA_s=pd.get_dummies(DATA)
+X = DATA_s.drop(['HeartDisease'], axis=1)
+y = DATA_s['HeartDisease']
+
 
 #normalize data & split
-scaler=StandardScaler()
-X_train,X_test,y_train,y_test = train_test_split(X,y, test_size=0.4, stratify= y,random_state=25)
+scaler = StandardScaler()
+X_train, X_test, y_train,  y_test = train_test_split(X, y, test_size=0.4, stratify=y, random_state=25)
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
@@ -33,7 +102,7 @@ def evaluate_model(model, X, y):
 
 
 #predict
-y_pred=svm.predict(X_test)
+y_pred = svm.predict(X_test)
 
 
 
@@ -41,7 +110,7 @@ y_pred=svm.predict(X_test)
 score = []
 cv_scores = []
 score.append(accuracy_score(y_pred=y_pred, y_true=y_test))
-cv_scores.append(evaluate_model(svm,X,y))
+cv_scores.append(evaluate_model(svm, X, y))
 print(classification_report(y_pred=y_pred, y_true=y_test))
 print(cv_scores)
 print(score)

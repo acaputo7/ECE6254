@@ -103,16 +103,3 @@ for name, ax in zip_longest(timing, axs.ravel()):
     plot_embedding(projections[name], title, ax)
 
 plt.show()
-## PCA
-
-
-## Kernel PCA
-
-
-## MDS
-
-
-## LLE
-
-
-## Isomap
