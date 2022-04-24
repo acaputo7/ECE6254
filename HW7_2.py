@@ -60,7 +60,7 @@ np.random.seed(2022)
 digits = load_digits(n_class=7)
 X, y = digits.data, digits.target
 n_samples, n_features = X.shape
-n_neighbors = 30
+n_neighbors = 15
 embeddings = {
     "PCA embedding": decomposition.PCA(n_components=2
     ),
@@ -102,4 +102,4 @@ for name, ax in zip_longest(timing, axs.ravel()):
     title = f"{name} (time {timing[name]:.3f}s)"
     plot_embedding(projections[name], title, ax)
 
-plt.show()
+plt.savefig('7_2_figure30.png')

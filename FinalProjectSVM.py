@@ -4,7 +4,7 @@ import seaborn as sns
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import cross_val_score, RepeatedStratifiedKFold
-from sklearn.metrics import classification_report, accuracy_score, ConfusionMatrixDisplay, confusion_matrix, RocCurveDisplay, roc_curve
+from sklearn.metrics import classification_report, accuracy_score, precision_score, recall_score, f1_score, ConfusionMatrixDisplay, confusion_matrix, RocCurveDisplay, roc_curve
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 import plotly.express as px
@@ -13,7 +13,7 @@ import plotly.express as px
 
 
 #import dataset
-DATA = pd.read_csv('C:/Users/acaputo7/PycharmProjects/ECE6254/heart.csv')
+DATA = pd.read_csv('C:/Users/Alex/PycharmProjects/ECE6254/heart.csv')
 
 #split categorical features and numerical features
 numerical = DATA.drop(['HeartDisease'], axis=1).select_dtypes('number').columns
@@ -100,11 +100,12 @@ def evaluate_model(model, X, y):
     cv = RepeatedStratifiedKFold(n_splits=5, n_repeats=5)
     scores = cross_val_score(model, scaler.fit_transform(X), y, scoring='accuracy', cv=cv, n_jobs=-1, error_score='raise')
     return np.mean(scores)
-
+nSV, nFeat = svm.support_vectors_.shape
+print(str(nSV))
 
 #predict
 y_pred = svm.predict(X_test)
-
+y_train_pred = svm.predict(X_train)
 #confusion matrix
 
 # disp = ConfusionMatrixDisplay(confusion_matrix(y_true=y_test,y_pred=y_pred))
@@ -115,6 +116,18 @@ y_pred = svm.predict(X_test)
 # disp = RocCurveDisplay.from_estimator(clf, X_test, y_test)
 # disp.plot()
 # plt.savefig('ROC_CurveSVM.png')
+
+
+def train_val(y_train, y_train_pred, y_test, y_pred):
+    scores = {"train_set": {"Accuracy": accuracy_score(y_train, y_train_pred),
+                        "Precision": precision_score(y_train, y_train_pred),
+                        "Recall": recall_score(y_train, y_train_pred),
+                        "f1": f1_score(y_train, y_train_pred)},
+              "test_set": {"Accuracy": accuracy_score(y_test, y_pred),
+                       "Precision": precision_score(y_test, y_pred),
+                       "Recall": recall_score(y_test, y_pred),
+                   "f1": f1_score(y_test, y_pred)}}
+    return pd.DataFrame(scores)
 #evaluate accuracy
 score = []
 cv_scores = []
@@ -123,3 +136,7 @@ cv_scores.append(evaluate_model(svm, X, y))
 print(classification_report(y_pred=y_pred, y_true=y_test))
 print('Cross validation mean score: ' + str(cv_scores))
 print('Accuracy score: ' + str(score))
+
+print(train_val(y_train, y_train_pred, y_test, y_pred))
+
+
